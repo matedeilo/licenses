@@ -1,0 +1,42 @@
+buildscript {
+	ext {
+		springBootVersion = '2.0.5.RELEASE'
+	}
+	repositories {
+		maven {
+			url "https://plugins.gradle.org/m2/"
+		}
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath "com.netflix.nebula:nebula-release-plugin:8.0.1"
+		classpath "com.netflix.nebula:gradle-dependency-lock-plugin:7.0.1"
+	}
+}
+
+
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'application'
+apply plugin: 'nebula.release'
+apply plugin: 'nebula.dependency-lock'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+
+mainClassName = 'com.mate.licenses.Application'
+
+//group = 'com.mate'
+//version = '0.0.1-SNAPSHOT'
+//sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+	implementation('org.springframework.boot:spring-boot-starter-actuator')
+	implementation('org.springframework.boot:spring-boot-starter-web')
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
+}
