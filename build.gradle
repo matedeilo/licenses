@@ -11,6 +11,8 @@ buildscript {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
 		classpath "com.netflix.nebula:nebula-release-plugin:8.0.1"
 		classpath "com.netflix.nebula:gradle-dependency-lock-plugin:7.0.1"
+//		classpath "com.netflix.nebula:nebula-docker-plugin:2.0.3"
+		classpath "com.bmuschko:gradle-docker-plugin:3.6.2"
 	}
 }
 
@@ -20,6 +22,7 @@ apply plugin: 'war'
 apply plugin: 'application'
 apply plugin: 'nebula.release'
 apply plugin: 'nebula.dependency-lock'
+//apply plugin: 'nebula.docker'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
@@ -39,4 +42,17 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-actuator')
 	implementation('org.springframework.boot:spring-boot-starter-web')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
+}
+
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+
+task createDockerfile(type: Dockerfile) {
+	destFile = project.file('build/docker/Dockerfile')
+	from 'openjdk:8-jre-alpine'
+	copyFile war.archiveName, '/app/license-service.war'
+	entryPoint 'java'
+	defaultCommand '-jar', '/app/license-service.war'
+	exposePort 8080
+	runCommand 'apk --update --no-cache add curl'
+	instruction 'HEALTHCHECK CMD curl -f http://localhost:8080/health || exit 1'
 }
